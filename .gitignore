@@ -1,0 +1,5 @@
+
+# Olympus: local runtime configuration
+.env
+.env.*
+!/.env.example
