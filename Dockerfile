@@ -12,7 +12,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY app.py .
+COPY --chown=nobody:nogroup app.py .
 
 EXPOSE 8080
 EXPOSE 123/udp
