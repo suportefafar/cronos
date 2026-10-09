@@ -44,13 +44,30 @@ def serve_ntp(host: str, port: int) -> None:
         print(f"Serving NTP on {host}:{port}/udp", flush=True)
         while True:
             request, peer = sock.recvfrom(512)
-            if not client_allowed(peer[0]) or len(request) < 48:
+            if not client_allowed(peer[0]):
+                print(
+                    f"Rejected NTP request from {peer[0]}:{peer[1]} "
+                    "reason=source_not_allowed",
+                    flush=True,
+                )
+                continue
+            if len(request) < 48:
+                print(
+                    f"Rejected NTP request from {peer[0]}:{peer[1]} "
+                    f"reason=packet_too_short bytes={len(request)}",
+                    flush=True,
+                )
                 continue
 
             first = request[0]
             version = (first >> 3) & 0x7
             mode = first & 0x7
             if mode != 3 or version not in (3, 4):
+                print(
+                    f"Rejected NTP request from {peer[0]}:{peer[1]} "
+                    f"reason=unsupported_version_or_mode version={version} mode={mode}",
+                    flush=True,
+                )
                 continue
 
             now = time.time()

@@ -19,6 +19,8 @@ A API também responde em `/` e `/api/time`. O serviço NTP não passa pelo Cadd
 
 O filtro padrão aceita origens em `150.164.110.0/24`, `150.164.111.0/24` e `192.168.137.0/24`. Os gateways dos laboratórios fazem SNAT; portanto, Cronos normalmente vê o endereço do gateway nas duas redes `150.164.*`, e não os IPs privados dos PCs atrás dele. A rede `192.168.137.0/24` também está autorizada para clientes cujo endereço de origem chegue diretamente ao serviço sem SNAT. Se o roteamento ou NAT mudar, revise `ALLOWED_NETWORKS`, a regra do Caddy e o firewall.
 
+O Cronos registra no log do container as requisições NTP recebidas e rejeitadas, com endereço de origem e motivo (`source_not_allowed`, `packet_too_short` ou `unsupported_version_or_mode`). Na API HTTP, o Caddy registra todas as respostas no access log do proxy, incluindo os `403` da regra de rede; as respostas `403` e `404` geradas pela aplicação aparecem no log do container Cronos.
+
 ### DNS e independência externa
 
 Os clientes podem usar `cronos.farmacia.ufmg.br` se o DNS institucional resolver o nome para o endereço alcançável dentro da rede. Para que uma falha de DNS não impeça a sincronização, configure o cliente NTP com o **IP interno fixo do host Cronos**, após confirmar qual IP é roteável a partir de cada laboratório. Não presuma que `150.164.110.111` seja o IP do serviço: esse endereço foi citado como exemplo de gateway.
